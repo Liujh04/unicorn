@@ -84,18 +84,14 @@ class FOCAL:
 		self.initialize_policy()
 		self.tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
 		self.bert_model = BertModel.from_pretrained("bert-base-uncased").to(ptu.device)
-		self.bert_model = get_peft_model(self.bert_model, self.lora_config)
-		
-		for param in self.bert_model.base_model.parameters():
-			param.requires_grad = False
-		
 		self.lora_config = LoraConfig(
-            r=16,
-            lora_alpha=32,
-            target_modules=["query", "value"],
-            lora_dropout=0.1
-        )
-		
+	            r=16,
+	            lora_alpha=32,
+	            target_modules=["query", "value"],
+	            lora_dropout=0.1
+        	)
+		self.bert_model = get_peft_model(self.bert_model, self.lora_config)
+
 		self.context_classifier = TaskClassifier(desc_size=768, task_embedding_size=self.args.task_embedding_size).to(ptu.device)
   
 		# self.context_classifier.load_state_dict(torch.load("/root/unicorn/logs/AntDir-v0/classifier_seed1/models/context_classifier1000.pt", map_location=ptu.device))
